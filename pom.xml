@@ -12,6 +12,9 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.release>8</maven.compiler.release>
   </properties>
 
   <dependencies>
@@ -22,10 +25,15 @@
       <type>jar</type>
       <scope>test</scope>
     </dependency>
-    <dependency>
+    <!--<dependency>
       <groupId>org.netpreserve.commons</groupId>
       <artifactId>webarchive-commons</artifactId>
       <version>1.1.5-IA-cdh5</version>
+    </dependency>-->
+    <dependency>
+     <groupId>my.org.netpreserve.commons</groupId>
+     <artifactId>webarchive-commons-shaded</artifactId>
+     <version>1.1.5-IA-cdh5</version>
     </dependency>
     <dependency>
       <groupId>org.archive.access-control</groupId>
@@ -175,13 +183,71 @@
       </plugins>
     </pluginManagement>
     <plugins>
+      <!-- Begin shade-->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>3.0.0</version>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <goals>
+                <goal>shade</goal>
+              </goals>
+              <configuration>
+                <artifactSet>
+                    <includes>
+                        <include>com.google.*:*</include>
+                    </includes>
+                </artifactSet>
+                <relocations>
+                  <relocation>
+                    <pattern>com.google.</pattern>
+                    <shadedPattern>thirdparty.com.google.</shadedPattern>
+                  </relocation>
+                </relocations>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <!-- End shade -->
+
+        <!--<plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-shade-plugin</artifactId>
+  <version>2.3</version>
+  <executions>
+    <execution>
+      <phase>package</phase>
+      <goals>
+        <goal>shade</goal>
+      </goals>
+      <configuration>
+      <artifactSet>
+          <includes>
+            <include>com.google.guava:*</include>
+          </includes>
+      </artifactSet>
+      <minimizeJar>false</minimizeJar>
+      <relocations>
+          <relocation>
+            <pattern>com.google.common</pattern>
+            <shadedPattern>repackaged.com.google.common</shadedPattern>
+          </relocation>
+      </relocations>
+      <shadedArtifactAttached>true</shadedArtifactAttached>
+      </configuration>
+  </execution>
+</executions>
+</plugin>-->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>2.3.2</version>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>1.8</source>
+          <target>1.8</target>
+          <release>${maven.compiler.release}</release>
         </configuration>
       </plugin>
       <plugin>
